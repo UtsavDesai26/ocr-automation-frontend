@@ -9,10 +9,12 @@ import {
   CloseOutlined,
   PlusOutlined,
   FileSearchOutlined,
+  MenuOutlined,
 } from "@ant-design/icons";
 import "./protectedroute.css";
 import Loader from "@components/UI/Loader/Loader";
 import Logo from "../../../public/logo.png";
+import { Header } from "antd/es/layout/layout";
 
 function getItem(label, key, icon, children) {
   return {
@@ -121,14 +123,14 @@ const PrivateRoute = () => {
         </div>
       </Sider>
       <Layout>
-        {/* <Header className="header">
+        <Header className="header">
           <Button
             className="menu-icon"
             icon={<MenuOutlined />}
             onClick={() => setOpenSidebar(!openSidebar)}
           />
-          {userIcon}
-        </Header> */}
+          {/* {userIcon} */}
+        </Header>
         <Content className="content-layout">
           <Suspense fallback={<Loader />}>
             <Outlet />

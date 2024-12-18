@@ -41,7 +41,7 @@ const ViewSchemaData = () => {
         if (typeof value === "boolean") return value ? "Yes" : "No";
         return value;
       },
-      width: key.length * 8,
+      width: key.length * 10,
       className: "antd-table-column-min-width-100",
     }));
   };
@@ -98,12 +98,12 @@ const ViewSchemaData = () => {
   };
 
   const handleExportToXLSX = () => {
-    if (dataSource.length === 0) {
+    if (allData.length === 0) {
       message.warning("No data to export");
       return;
     }
 
-    const worksheet = XLSX.utils.json_to_sheet(dataSource);
+    const worksheet = XLSX.utils.json_to_sheet(allData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, schemaName);
     XLSX.writeFile(workbook, `${schemaName}_data.xlsx`);
@@ -118,7 +118,7 @@ const ViewSchemaData = () => {
               <Row justify="space-between" gutter={[20, 10]}>
                 <Col>
                   <Typography.Title level={4}>
-                    View {schemaName}'s Schema Data
+                    {schemaName}'s Analysis Data
                   </Typography.Title>
                 </Col>
                 <Col>
