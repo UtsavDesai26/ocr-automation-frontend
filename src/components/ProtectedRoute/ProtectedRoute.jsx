@@ -1,6 +1,6 @@
 import React, { useState, Suspense, useEffect, useRef } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
-import { Menu, Layout, Button, Typography, Image } from "antd";
+import { Menu, Layout, Button, Image } from "antd";
 const { Sider, Content } = Layout;
 import {
   UserOutlined,
@@ -35,37 +35,47 @@ const PrivateRoute = () => {
   const navigate = useNavigate();
 
   const [collapsed, setCollapsed] = useState(false);
-  const [openKeys, setOpenKeys] = useState(["opportunities"]);
   const [openSidebar, setOpenSidebar] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(window.innerWidth < 576);
 
   const sidebarRef = useRef(null);
 
   useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth < 576);
+    };
 
+    window.addEventListener("resize", handleResize);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
-  const handleClickOutside = (event) => {
-    if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-      setOpenSidebar(!openSidebar);
-    }
-  };
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target) &&
+        openSidebar
+      ) {
+        setOpenSidebar(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openSidebar]);
 
   const handleMenuClick = ({ key }) => {
     navigate(key);
   };
 
-  const handleSubMenuOpenChange = (keys) => {
-    setOpenKeys(keys);
-  };
-
   return (
     <Layout className="layout">
       <Sider
-        className={`sidebar${openSidebar ? " mobile" : ""}`}
+        className={`sidebar ${openSidebar ? "" : "mobile"}`}
         theme="dark"
         width={250}
         trigger={null}
@@ -76,8 +86,17 @@ const PrivateRoute = () => {
         onBreakpoint={(broken) => {
           setCollapsed(broken);
         }}
-        responsive={{ md: false, lg: true, xl: true, xxl: true }}
+        responsive={{ lg: true, xl: true, xxl: true }}
         ref={sidebarRef}
+        style={
+          isMobileView
+            ? {
+                display: openSidebar ? "block" : "none",
+                position: "absolute",
+                zIndex: 99,
+              }
+            : {}
+        }
       >
         <div
           style={{
@@ -104,8 +123,6 @@ const PrivateRoute = () => {
             ]}
             mode="inline"
             items={MenuItems}
-            openKeys={openKeys}
-            onOpenChange={handleSubMenuOpenChange}
             onClick={handleMenuClick}
           />
           <Button
@@ -131,7 +148,7 @@ const PrivateRoute = () => {
           />
           {/* {userIcon} */}
         </Header>
-        <Content className="content-layout">
+        <Content>
           <Suspense fallback={<Loader />}>
             <Outlet />
           </Suspense>
